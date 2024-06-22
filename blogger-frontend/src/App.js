@@ -1,17 +1,31 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React,{useState,useEffect} from 'react';
 import Header from './components/Header';
 import BlogList from './components/BlogList';
+import Body from './components/Body';
+import BlogPostForm from './components/BlogPostForm';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if the user is signed in by checking the presence of a token in localStorage
+    const token = localStorage.getItem('token');
+    // setIsSignedIn(!!token);
+    setIsSignedIn(false)
+  }, []);
   return (
     <Router>
       <div className="App">
-        <Header />
+        <Header isSignedIn={isSignedIn} setIsSignedIn={setIsSignedIn}  />
         <Routes>
-          <Route path="/all-posts" element={<BlogList filter="all-posts" />} />
-          <Route path="/my-posts" element={<BlogList filter="my-posts" />} />
-          <Route exact path="/" element={<h1> Welcome to Blogger</h1>} />
+          <Route path="/" element={<Body isSignedIn={isSignedIn} />} />
+          <Route path="/all-posts" element={<PrivateRoute element={BlogList} isSignedIn={isSignedIn} filter="all-posts" />} />
+          <Route path="/my-posts" element={<PrivateRoute element={BlogList} isSignedIn={isSignedIn} filter="my-posts" />} />
+          <Route path="/create" element={<PrivateRoute element={BlogPostForm} isSignedIn={isSignedIn} onSuccess={() => window.location.href = '/all-posts'} />} />
+          <Route path="/edit/:id" element={<PrivateRoute element={BlogPostForm} isSignedIn={isSignedIn} onSuccess={() => window.location.href = '/all-posts'} />} />
         </Routes>
       </div>
     </Router>
