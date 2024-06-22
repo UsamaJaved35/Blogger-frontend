@@ -3,17 +3,9 @@ import { Link } from 'react-router-dom';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm'
 import Body from './Body';
-const Header = () => {
+const Header = ({isSignedIn,setIsSignedIn}) => {
     const [showSignIn, setShowSignIn] = useState(false);
     const [showSignUp, setShowSignUp] = useState(false);
-    const [isSignedIn, setIsSignedIn] = useState(false);
-
-  useEffect(() => {
-    // Check if the user is signed in by checking the presence of a token in localStorage
-    const token = localStorage.getItem('token');
-    // setIsSignedIn(!!token);
-    setIsSignedIn(true)
-  }, []);
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
@@ -60,7 +52,6 @@ const Header = () => {
 </nav>
     {showSignIn && <SignInForm />}
     {showSignUp && <SignUpForm />}
-    {!showSignIn && !showSignUp && !isSignedIn && <Body/>}
     </div>
   )
 }
