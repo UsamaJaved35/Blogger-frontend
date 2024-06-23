@@ -2,11 +2,10 @@ import React from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const BlogPost = ({ id, title, content, author, date, filter }) => {
-  const handleDelete = async (postId) => {
+const BlogPost = ({ id, title, content, author, date, filter, onDelete }) => {
+  const handleDelete = async () => {
     try {
-      await axios.delete(`/api/blogposts/${postId}`);
-      // fetchBlogPosts(); // Refresh the list after deletion
+      await onDelete(); // Call onDelete function passed from BlogList
     } catch (error) {
       console.error('Error deleting blog post:', error);
     }
@@ -23,7 +22,7 @@ const BlogPost = ({ id, title, content, author, date, filter }) => {
           <Link to={`/edit/${id}`} className="btn btn-warning me-2">✏️ Edit</Link>
           <button
             className="btn btn-danger"
-            onClick={() => handleDelete(id)}
+            onClick={handleDelete}
           >
             🗑️ Delete
           </button>

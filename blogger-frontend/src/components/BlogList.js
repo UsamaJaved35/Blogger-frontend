@@ -6,35 +6,46 @@ import BlogPost from './BlogPost';
 const BlogList = ({filter}) => {
   const [blogPosts, setBlogPosts] = useState([]);
 
+  const handleDeletePost = async (deletedPostId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(`http://localhost:5000/api/blogs/${deletedPostId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      alert(response.data.message)
+      // setBlogPosts(prevPosts => prevPosts.filter(post => post._id !== deletedPostId));
+    } catch (error) {
+      console.error('Error deleting blog post:', error);
+    }
+  };
+
   useEffect(() => {
     fetchBlogPosts();
-  }, [filter]);
+  }, [filter,handleDeletePost]);
 
   const fetchBlogPosts = async () => {
     try {
-    //   const response = await axios.get('/api/blogposts'); // Replace with your API endpoint
-    //   setBlogPosts(response.data); // Assuming response.data is an array of blog posts
-    // const endpoint = filter === 'my-posts' ? '/api/my-posts' : '/api/blogposts'; // Adjust endpoints as needed
-    // const response = await axios.get(endpoint);
-    setBlogPosts([{id:1,title:"abc",content:"content",author:"usama",date: Date.now},{id:2,title:"abc",content:"content",author:"usama",date:Date.now}])
+    const endpoint = filter === 'my-posts' ? 'http://localhost:5000/api/blogs/my-blogs' : 'http://localhost:5000/api/blogs/'; // Adjust endpoints as needed
+    const token = localStorage.getItem('token');
+      const response = await axios.get(endpoint,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    setBlogPosts(response.data)
     } catch (error) {
       console.error('Error fetching blog posts:', error);
     }
   };
-  // const fetchBlogPosts = async () => {
-  //   try {
-  //     const response = await axios.get('/api/blogposts');
-  //     const allPosts = response.data;
 
-  //     const filteredPosts = filter === 'my-posts'
-  //       ? allPosts.filter(post => post.author === 'current-user') // Replace with actual current user
-  //       : allPosts;
-
-  //     setBlogPosts(filteredPosts);
-  //   } catch (error) {
-  //     console.error('Error fetching blog posts:', error);
-  //   }
-  // };
 
   return (
     <div className="container mt-4">
@@ -46,13 +57,14 @@ const BlogList = ({filter}) => {
       {blogPosts.map(post => (
         <>
         <BlogPost
-          key={post.id} //  each post has a unique ID
-          id={post.id}
+          key={post._id} //  each post has a unique ID
+          id={post._id}
           title={post.title}
           content={post.content}
-          author={post.author}
+          author={post.author.username}
           date={post.date}
           filter={filter}
+          onDelete={() => handleDeletePost(post._id)}
         />
           </>
       ))}
