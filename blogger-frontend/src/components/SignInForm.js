@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
-// import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const SignInForm = () => {
+const SignInForm = ({setIsSignedIn}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-    //   const response = await axios.post('/api/signin', { email, password });
-    //   localStorage.setItem('token', response.data.token);
-      alert('Signed in successfully!');
-      // Optionally, redirect to home page or other protected routes
+      const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        setIsSignedIn(true);
+        alert(response.data.message || 'Signed in successfully!');
+        navigate("/all-posts");
+      } else {
+        alert(response.data.message || 'Something went wrong');
+      }
     } catch (error) {
-    //   alert(error.response.data.error);
+      if (error.response && error.response.data) {
+        alert(error.response.data.message || 'Something went wrong');
+      } else {
+        alert('Something went wrong');
+      }
     }
   };
 
