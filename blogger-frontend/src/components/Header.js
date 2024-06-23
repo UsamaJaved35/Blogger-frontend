@@ -1,11 +1,9 @@
 import React,{useState, useEffect} from 'react'
-import { Link } from 'react-router-dom';
-import SignInForm from './SignInForm';
-import SignUpForm from './SignUpForm'
-import Body from './Body';
+import { Link, useNavigate } from 'react-router-dom';
 const Header = ({isSignedIn,setIsSignedIn}) => {
     const [showSignIn, setShowSignIn] = useState(false);
     const [showSignUp, setShowSignUp] = useState(false);
+    const navigate = useNavigate('')
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
@@ -15,11 +13,13 @@ const Header = ({isSignedIn,setIsSignedIn}) => {
     const toggleSignIn = () => {
         setShowSignIn(!showSignIn);
         setShowSignUp(false); // Ensure only one form is shown at a time
+        navigate('/sign-in')
       };
     
       const toggleSignUp = () => {
         setShowSignUp(!showSignUp);
         setShowSignIn(false); // Ensure only one form is shown at a time
+        navigate('/sign-up')
       };
 
   return (
@@ -50,8 +50,6 @@ const Header = ({isSignedIn,setIsSignedIn}) => {
     )}
   </div>
 </nav>
-    {showSignIn && <SignInForm />}
-    {showSignUp && <SignUpForm />}
     </div>
   )
 }
