@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const BlogPostForm = ({ onSuccess }) => {
+const BlogPostForm = () => {
   const { id } = useParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
+  const navigate = useNavigate('')
 
   useEffect(() => {
     if (id) {
       const fetchBlogPost = async () => {
         try {
-          const response = await axios.get(`/api/blogposts/${id}`);
+          const response = await axios.get(`http://localhost:5000/api/blogs/${id}`);
           const { title, content, author } = response.data;
           setTitle(title);
           setContent(content);
@@ -28,13 +30,28 @@ const BlogPostForm = ({ onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
     try {
       if (id) {
-        await axios.put(`/api/blogposts/${id}`, { title, content, author });
+        await axios.put(`http://localhost:5000/api/blogs/${id}`, { title, content },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
       } else {
-        await axios.post('/api/blogposts', { title, content, author });
+        await axios.post('http://localhost:5000/api/blogs/', { title, content},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
       }
-      onSuccess();
+      navigate('/my-posts')
     } catch (error) {
       console.error('Error saving blog post:', error);
     }
